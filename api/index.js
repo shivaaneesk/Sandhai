@@ -92,7 +92,7 @@ app.post('/api/auth/signup', async (req, res) => {
     res.status(201).json({ token, user: { email: user.email, location: user.location, lat: user.lat, lon: user.lon } });
   } catch (error) {
     console.error('Signup Error:', error);
-    res.status(500).json({ error: 'Failed to create account' });
+    res.status(500).json({ error: 'Signup Error: ' + error.message });
   }
 });
 
@@ -109,7 +109,7 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, user: { email: user.email, location: user.location, lat: user.lat, lon: user.lon } });
   } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Login Error: ' + error.message });
   }
 });
 
