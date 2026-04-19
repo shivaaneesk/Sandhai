@@ -41,6 +41,9 @@ const VisualDecisionMatrix = ({ data, user }) => {
     const token = localStorage.getItem('zencart_token');
     if (!token) return;
     
+    // OPTIMISTIC UPDATE: Make the UI feel instantly responsive
+    setSavedItems(prev => new Set([...prev, p.name]));
+    
     try {
       const res = await fetch('/api/user/save', {
         method: 'POST',
@@ -50,11 +53,23 @@ const VisualDecisionMatrix = ({ data, user }) => {
         },
         body: JSON.stringify({ deal: p })
       });
-      if (res.ok) {
-        setSavedItems(new Set([...savedItems, p.name]));
+      
+      if (!res.ok) {
+        // Revert on failure
+        setSavedItems(prev => {
+          const next = new Set(prev);
+          next.delete(p.name);
+          return next;
+        });
       }
     } catch (e) {
       console.error('Failed to save', e);
+      // Revert on failure
+      setSavedItems(prev => {
+        const next = new Set(prev);
+        next.delete(p.name);
+        return next;
+      });
     }
   };
 

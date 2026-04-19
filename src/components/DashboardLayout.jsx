@@ -53,6 +53,10 @@ const SavedDealsView = ({ user }) => {
   }, []);
 
   const handleRemove = async (dealName) => {
+    // OPTIMISTIC UPDATE: Hide the card instantly
+    const previousDeals = [...deals];
+    setDeals(prev => prev.filter(deal => deal.name !== dealName));
+
     try {
       const token = localStorage.getItem('zencart_token');
       const res = await fetch('/api/user/remove', {
@@ -64,11 +68,17 @@ const SavedDealsView = ({ user }) => {
         body: JSON.stringify({ dealName })
       });
       const data = await res.json();
-      if (data.success) {
+      
+      if (!data.success) {
+        // Revert if server failed
+        setDeals(previousDeals);
+      } else {
+        // Sync with actual server state silently
         setDeals(data.savedDeals);
       }
     } catch (err) {
       console.error('Failed to remove deal', err);
+      setDeals(previousDeals);
     }
   };
 
