@@ -53,7 +53,7 @@ const CommandBar = ({ user }) => {
     setResults(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/search', {
+      const response = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, lat, lon, locationName })
@@ -86,7 +86,7 @@ const CommandBar = ({ user }) => {
       formData.append('lon', lon);
       formData.append('locationName', locationName);
 
-      const response = await fetch('http://localhost:3001/api/search/image', {
+      const response = await fetch('/api/search/image', {
         method: 'POST',
         body: formData,
       });

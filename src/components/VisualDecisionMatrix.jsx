@@ -42,7 +42,7 @@ const VisualDecisionMatrix = ({ data, user }) => {
     if (!token) return;
     
     try {
-      const res = await fetch('http://localhost:3001/api/user/save', {
+      const res = await fetch('/api/user/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
-import User from './models/User.js';
+import User from '../models/User.js';
 
 dotenv.config();
 
@@ -371,5 +371,4 @@ app.get('/api/user/saved', authenticate, async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`🚀 ZenCart Backend live on port ${PORT}`));
+export default app;

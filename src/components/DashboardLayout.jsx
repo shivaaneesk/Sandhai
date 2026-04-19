@@ -38,7 +38,7 @@ const SavedDealsView = ({ user }) => {
     const fetchDeals = async () => {
       try {
         const token = localStorage.getItem('zencart_token');
-        const res = await fetch('http://localhost:3001/api/user/saved', {
+        const res = await fetch('/api/user/saved', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -55,7 +55,7 @@ const SavedDealsView = ({ user }) => {
   const handleRemove = async (dealName) => {
     try {
       const token = localStorage.getItem('zencart_token');
-      const res = await fetch('http://localhost:3001/api/user/remove', {
+      const res = await fetch('/api/user/remove', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
