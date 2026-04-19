@@ -22,10 +22,30 @@ const SERPER_API_KEY = process.env.SERPER_API_KEY;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zencart';
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-zencart-key';
 
-// Connect to MongoDB
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('📦 Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// Serverless MongoDB Connection Pattern
+let cachedDb = null;
+async function connectToDatabase() {
+  if (cachedDb) return cachedDb;
+  try {
+    const db = await mongoose.connect(MONGODB_URI);
+    cachedDb = db;
+    console.log('📦 Connected to MongoDB');
+    return db;
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    throw err;
+  }
+}
+
+// Middleware to Ensure DB Connection on Every Request
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    return res.status(500).json({ error: 'Database connection failed (Check Vercel Environment Variables)' });
+  }
+});
 
 
 // --- AUTHENTICATION ROUTES --- //
