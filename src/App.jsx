@@ -1,14 +1,44 @@
 import React from 'react';
-import CommandBar from './components/CommandBar';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import DashboardLayout from './components/DashboardLayout';
+import Login from './components/Login';
+import Signup from './components/Signup';
+
+// Protected Route Component to enforce login-first philosophy
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('zencart_token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+function Main() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('zencart_user') || '{}');
+
+  const handleLogout = () => {
+    localStorage.removeItem('zencart_token');
+    localStorage.removeItem('zencart_user');
+    navigate('/login');
+  };
+
+  return <DashboardLayout user={user} handleLogout={handleLogout} />;
+}
 
 function App() {
   return (
-    <div className="w-full max-w-[1200px] flex flex-col items-center justify-center duration-700 ease-in-out transition-all">
-      <h1 className="text-5xl font-medium tracking-tight text-center mb-12 text-zinc-200">
-        ZenCart
-      </h1>
-      <CommandBar />
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
+        <Routes>
+          {/* Always land on login from root */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Main /></ProtectedRoute>} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
